@@ -18,7 +18,11 @@ FROM amazoncorretto:17-alpine
 WORKDIR /app
 RUN mkdir ./logs
 COPY --from=builder /app/ms-cursos/target/ms-cursos-0.0.1-SNAPSHOT.jar .
-EXPOSE 8082
+ARG PORT_APP=8002
+#creo la variable de ambiente port por defecto en 8001, pero se puede cambiar en el comando del run
+#con -e o --env-file y la ruta del archivo
+ENV PORT $PORT_APP
+EXPOSE $PORT
 #entrypoint es mas estricto que cmd y no te deja sobreescribir la linea de entrada por ejemplo
 #cuando haces un run y pasas un comando el entrypoint lo va aignorar y usar el comando del entrypiont,
 #en cambio cmd lo sobreescribe por el comando q se le pasa

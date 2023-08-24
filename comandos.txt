@@ -5,5 +5,5 @@ docker build -t ms-cursos:0.0.1 . -f .\ms-cursos\Dockerfile
 runs:
 docker run -v data-mysql:/var/lib/mysql --name some-mysql -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=msv_usuarios -d -p 3306:3306 --network spring mysql:8.0
 docker run -v data-postgres:/var/lib/postgresql/data --name some-postgres -e POSTGRES_PASSWORD=root -e POSTGRES_DB=msv_cursos -d -p 5432:5432 --network spring postgres:15
-docker run --name ms-usuarios -p 8001:8001 --network spring -d ms-usuarios:0.0.1
-docker run --name ms-cursos -p 8002:8002 --network spring -d ms-cursos:0.0.1
+docker run --name ms-usuarios -p 8001:8001 --env-file ./ms-usuarios/.env --network spring -d ms-usuarios:0.0.1
+docker run --name ms-cursos -p 8002:8002 --env-file ./ms-cursos/.env --network spring -d ms-cursos:0.0.1

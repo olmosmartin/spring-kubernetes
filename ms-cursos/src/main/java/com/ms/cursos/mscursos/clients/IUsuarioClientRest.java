@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@FeignClient(name="ms-usuarios", url="ms-usuarios:8001") //acá va el nombre del otro microservicio igual q como esta en el pom spring.application.name y el nombre ms-usuarios:8001 es porque va a correr dockerizado
+@FeignClient(name="ms-usuarios", url="${ms.usuarios.url}") //acá va el nombre del otro microservicio igual q como esta en el pom spring.application.name y el nombre ms-usuarios:8001 es porque va a correr dockerizado
 public interface IUsuarioClientRest {
     @GetMapping("/{id}")
     public Usuario porId(@PathVariable Long id);
