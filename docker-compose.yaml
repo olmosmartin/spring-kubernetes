@@ -1,0 +1,57 @@
+version: "3.9"
+
+services:
+  some-mysql:
+    image: mysql:8.0
+    volumes:
+      - data-mysql:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: msv_usuarios
+    restart: always
+
+  some-postgres:
+    image: postgres:15
+    volumes:
+      - data-postgres:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: msv_cursos
+    restart: always
+
+  ms-usuarios:
+    container_name: ms-usuarios
+    #image: ms-usuarios:0.0.1
+    build:
+      context: ./
+      dockerfile: ./ms-usuarios/Dockerfile
+    ports:
+      - "8001:8001"
+    env_file:
+      - ./ms-usuarios/.env
+    depends_on:
+      - some-mysql
+    restart: always
+
+  ms-cursos:
+    container_name: ms-cursos
+    #image: ms-cursos:0.0.1
+    build:
+      context: ./
+      dockerfile: ./ms-cursos/Dockerfile
+    ports:
+      - "8002:8002"
+    env_file:
+      - ./ms-cursos/.env
+    depends_on:
+      - some-postgres
+      - ms-usuarios
+    restart: always
+
+volumes:
+  data-mysql:
+  data-postgres:
