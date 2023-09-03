@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: ms-usuarios
+  name: ms-usuarios
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ms-usuarios
+  template:
+    metadata:
+      labels:
+        app: ms-usuarios
+    spec:
+      containers:
+        - image: ms-usuarios:0.0.1
+          name: mysql
+          ports:
+            - containerPort: 8001
+          env:
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: msvc-usuarios
+                  key: port
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: msvc-usuarios
+                  key: db_host
+            - name: DB_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: msvc-usuarios
+                  key: database
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: msvc-usuarios
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: msvc-usuarios
+                  key: password
+            - name: CURSOS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: msvc-usuarios
+                  key: curso_url
+          resources: {}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: ms-usuarios
+spec:
+  selector:
+    app: ms-usuarios
+  type: LoadBalancer
+  ports:
+    - port: 8001
+      targetPort: 8001

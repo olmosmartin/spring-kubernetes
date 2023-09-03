@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: ms-cursos
+  name: ms-cursos
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ms-cursos
+  template:
+    metadata:
+      labels:
+        app: ms-cursos
+    spec:
+      containers:
+        - image: ms-cursos:0.0.1
+          name: cursos
+          ports:
+            - containerPort: 8002
+          env:
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: msvc-cursos
+                  key: port
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: msvc-cursos
+                  key: db_host
+            - name: DB_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: msvc-cursos
+                  key: database
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: msvc-cursos
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: msvc-cursos
+                  key: password
+            - name: USUARIOS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: msvc-cursos
+                  key: usuario_url
+          resources: {}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: ms-cursos
+spec:
+  selector:
+    app: ms-cursos
+  type: LoadBalancer
+  ports:
+    - port: 8002
+      targetPort: 8002

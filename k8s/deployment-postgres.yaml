@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: some-postgres
+  name: some-postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: some-postgres
+  template:
+    metadata:
+      labels:
+        app: some-postgres
+    spec:
+      containers:
+        - image: postgres:15
+          name: postgres
+          ports:
+            - containerPort: 5432
+          resources: {}
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: msvc-cursos
+                  key: password
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: msvc-cursos
+                  key: database
+      
+          volumeMounts:
+            - name: data-postgres
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: data-postgres
+          persistentVolumeClaim:
+            claimName: postgres-pvc
+
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: some-postgres
+spec:
+  selector:
+    app: some-postgres
+  type: ClusterIP
+  ports:
+    - port: 5432
+      targetPort: 5432
